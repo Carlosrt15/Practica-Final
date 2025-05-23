@@ -1,5 +1,9 @@
 package model;
 
-public class ExpenseType {
-
+public enum ExpenseType {
+    GASOLINA,
+    REVISION,
+    ITV,
+    CAMBIO_DE_ACEITE,
+    OTROS
 }

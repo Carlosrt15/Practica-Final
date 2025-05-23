@@ -20,10 +20,12 @@ public class Car {
     }
 
     public int getId() {
+
         return this.id;
     }
 
-    public String getBrand() {
+    public String getBrand()
+    {
         return this.brand;
     }
 
