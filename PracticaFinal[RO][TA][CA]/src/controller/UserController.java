@@ -13,7 +13,7 @@ public class UserController {
             return false;
         }
 
-        String sql = "INSERT INTO users (uuid, nombre, password) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (id, name, password) VALUES (?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
