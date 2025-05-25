@@ -1,13 +1,16 @@
 package view;
 
+import controller.CarController;
 import controller.UserController;
+import model.Car;
 import model.User;
 
 import java.util.Scanner;
 
 public class MainView {
-    private static Scanner scanner = new Scanner(System.in);
-    private static UserController userController = new UserController();
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final UserController userController = new UserController();
+    private static final CarController carController = new CarController();
     private static User currentUser = null;
 
     public static void main(String[] args) {
@@ -27,10 +30,10 @@ public class MainView {
                     loginUser();
                     break;
                 case "3":
-                    System.out.println("👋 Saliendo del sistema...");
+                    System.out.println("Saliendo del sistema...");
                     return;
                 default:
-                    System.out.println("❌ Opción no válida.");
+                    System.out.println("Opción no válida.");
             }
         }
     }
@@ -43,9 +46,9 @@ public class MainView {
 
         boolean registered = userController.registerUser(name, password);
         if (registered) {
-            System.out.println(" Usuario registrado correctamente.");
+            System.out.println("Usuario registrado correctamente.");
         } else {
-            System.out.println(" El nombre de usuario ya existe.");
+            System.out.println("El nombre de usuario ya existe.");
         }
     }
 
@@ -58,10 +61,10 @@ public class MainView {
         User user = userController.loginUser(name, password);
         if (user != null) {
             currentUser = user;
-            System.out.println(" Sesión iniciada. ¡Bienvenido, " + user.getName() + "!");
+            System.out.println("Sesión iniciada. ¡Bienvenido, " + user.getName() + "!");
             showUserMenu();
         } else {
-            System.out.println(" Usuario o contraseña incorrectos.");
+            System.out.println("Usuario o contraseña incorrectos.");
         }
     }
 
@@ -76,16 +79,51 @@ public class MainView {
 
             switch (option) {
                 case "1":
+                    // Aquí puedes implementar verCoches()
+                    System.out.println("Funcionalidad no implementada aún.");
                     break;
                 case "2":
+                    addCar();
                     break;
                 case "3":
                     currentUser = null;
-                    System.out.println(" Sesión cerrada.");
+                    System.out.println("Sesión cerrada.");
                     return;
                 default:
-                    System.out.println(" Opción no válida.");
+                    System.out.println("Opción no válida.");
             }
+        }
+    }
+
+    private static void addCar() {
+        System.out.println("=== Añadir nuevo coche ===");
+
+        System.out.print("Marca: ");
+        String brand = scanner.nextLine();
+
+        System.out.print("Modelo: ");
+        String model = scanner.nextLine();
+
+        System.out.print("Matrícula: ");
+        String licensePlate = scanner.nextLine();
+
+        System.out.print("Año: ");
+        int year;
+        try {
+            year = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Año no válido.");
+            return;
+        }
+
+        Car car = new Car(brand, model, licensePlate, year);
+
+        boolean success = carController.registerCar(car, currentUser.getId());
+
+        if (success) {
+            System.out.println("Coche registrado correctamente.");
+        } else {
+            System.out.println("Error al registrar el coche.");
         }
     }
 
