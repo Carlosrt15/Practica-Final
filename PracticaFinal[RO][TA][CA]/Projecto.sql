@@ -30,3 +30,4 @@ CREATE TABLE expenses (
     description TEXT,
     FOREIGN KEY (car_id) REFERENCES cars(id)
 );
+

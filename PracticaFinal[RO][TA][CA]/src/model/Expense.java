@@ -2,21 +2,21 @@ package model;
 
 import java.time.LocalDate;
 
-public class Expense {
-    private int id;
+public  class Expense {
+     private int id;
     private int carId;
     private ExpenseType type;
-    private int kilometers;
+     private int kilometers;
     private LocalDate date;
-    private double amount;
+        private double amount;
     private String description;
 
     public Expense(int carId, ExpenseType type, int kilometers, LocalDate date, double amount, String description) {
-        this.carId = carId;
+          this.carId = carId;
         this.type = type;
-        this.kilometers = kilometers;
+                this.kilometers = kilometers;
         this.date = date;
-        this.amount = amount;
+            this.amount = amount;
         this.description = description;
     }
 

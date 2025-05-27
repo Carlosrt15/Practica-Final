@@ -5,6 +5,7 @@ import controller.UserController;
 import model.Car;
 import model.User;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class MainView {
@@ -79,9 +80,20 @@ public class MainView {
 
             switch (option) {
                 case "1":
-                    // Aquí puedes implementar verCoches()
-                    System.out.println("Funcionalidad no implementada aún.");
-                    break;
+    List<Car> cars = carController.getCarsByUserId(currentUser.getId());
+    if (cars.isEmpty()) {
+        System.out.println("No tienes coches registrados.");
+    } else {
+        System.out.println("=== Tus coches ===");
+        for (Car car : cars) {
+            System.out.println("Marca: " + car.getBrand() +
+                               " | Modelo: " + car.getModel() +
+                               " | Matrícula: " + car.getLicensePlate() +
+                               " | Año: " + car.getYear());
+        }
+    }
+    break;
+
                 case "2":
                     addCar();
                     break;
@@ -96,10 +108,10 @@ public class MainView {
     }
 
     private static void addCar() {
-        System.out.println("=== Añadir nuevo coche ===");
+                System.out.println("=== Añadir nuevo coche ===");
 
         System.out.print("Marca: ");
-        String brand = scanner.nextLine();
+             String brand = scanner.nextLine();
 
         System.out.print("Modelo: ");
         String model = scanner.nextLine();

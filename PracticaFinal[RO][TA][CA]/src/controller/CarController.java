@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
             import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CarController {
 
@@ -50,6 +52,35 @@ public class CarController {
 
 
     }
+        // Lstar coches usuarios
+    public List<Car> getCarsByUserId(String userId) {
+    List<Car> cars = new ArrayList<>();
+    String sql = "SELECT c.* FROM cars c " +
+                 "JOIN user_car uc ON c.id = uc.car_id " +
+                 "WHERE uc.user_id = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, userId);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Car car = new Car(
+                rs.getInt("id"),
+                rs.getString("brand"),
+                rs.getString("model"),
+                rs.getString("licensePlate"),
+                rs.getInt("year")
+            );
+            cars.add(car);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return cars;
+}
 
     
 }
