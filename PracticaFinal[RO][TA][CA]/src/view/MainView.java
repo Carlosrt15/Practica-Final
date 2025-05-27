@@ -71,7 +71,7 @@ public class MainView {
 
     private static void showUserMenu() {
         while (true) {
-            System.out.println("\n===== MENÚ DE USUARIO =====");
+            System.out.println("===== MENÚ DE USUARIO =====");
             System.out.println("1. Ver mis coches");
             System.out.println("2. Añadir coche");
             System.out.println("3. Cerrar sesión");
@@ -83,7 +83,8 @@ public class MainView {
     List<Car> cars = carController.getCarsByUserId(currentUser.getId());
     if (cars.isEmpty()) {
         System.out.println("No tienes coches registrados.");
-    } else {
+    } else              {
+        
         System.out.println("=== Tus coches ===");
         for (Car car : cars) {
             System.out.println("Marca: " + car.getBrand() +

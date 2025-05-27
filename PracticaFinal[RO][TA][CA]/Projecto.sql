@@ -1,3 +1,7 @@
+
+create database control_coches;
+        use control_coches;
+
 CREATE TABLE users (
     id CHAR(36) PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
