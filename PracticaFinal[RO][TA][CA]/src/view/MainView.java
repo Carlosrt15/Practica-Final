@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MainView {
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final UserController userController = new UserController();
-    private static final CarController carController = new CarController();
+    private static Scanner scanner = new Scanner(System.in);
+    private static UserController userController = new UserController();
+    private static CarController carController = new CarController();
     private static User currentUser = null;
 
     public static void main(String[] args) {
@@ -71,34 +71,25 @@ public class MainView {
 
     private static void showUserMenu() {
         while (true) {
-            System.out.println("===== MENÚ DE USUARIO =====");
+            System.out.println("\n===== MENÚ DE USUARIO =====");
             System.out.println("1. Ver mis coches");
             System.out.println("2. Añadir coche");
-            System.out.println("3. Cerrar sesión");
+            System.out.println("3. Añadir propietario a uno de mis coches");
+            System.out.println("4. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
             String option = scanner.nextLine();
 
             switch (option) {
                 case "1":
-    List<Car> cars = carController.getCarsByUserId(currentUser.getId());
-    if (cars.isEmpty()) {
-        System.out.println("No tienes coches registrados.");
-    } else              {
-        
-        System.out.println("=== Tus coches ===");
-        for (Car car : cars) {
-            System.out.println("Marca: " + car.getBrand() +
-                               " | Modelo: " + car.getModel() +
-                               " | Matrícula: " + car.getLicensePlate() +
-                               " | Año: " + car.getYear());
-        }
-    }
-    break;
-
+                    listMyCars();
+                    break;
                 case "2":
                     addCar();
                     break;
                 case "3":
+                    addOwnerToCar();
+                    break;
+                case "4":
                     currentUser = null;
                     System.out.println("Sesión cerrada.");
                     return;
@@ -109,10 +100,10 @@ public class MainView {
     }
 
     private static void addCar() {
-                System.out.println("=== Añadir nuevo coche ===");
+        System.out.println("=== Añadir nuevo coche ===");
 
         System.out.print("Marca: ");
-             String brand = scanner.nextLine();
+        String brand = scanner.nextLine();
 
         System.out.print("Modelo: ");
         String model = scanner.nextLine();
@@ -130,7 +121,6 @@ public class MainView {
         }
 
         Car car = new Car(brand, model, licensePlate, year);
-
         boolean success = carController.registerCar(car, currentUser.getId());
 
         if (success) {
@@ -139,6 +129,43 @@ public class MainView {
             System.out.println("Error al registrar el coche.");
         }
     }
+
+    private static void listMyCars() {
+        List<Car> cars = carController.getCarsByUserId(currentUser.getId());
+
+        if (cars.isEmpty()) {
+            System.out.println("No tienes coches registrados.");
+        } else {
+            System.out.println("=== Tus coches ===");
+            for (Car car : cars) {
+                System.out.printf("ID: %d | %s %s (%s) - Matrícula: %s%n",
+                        car.getId(), car.getBrand(), car.getModel(), car.getYear(), car.getLicensePlate());
+            }
+        }
+    }
+
+   private static void addOwnerToCar() {
+    listMyCars();
+    System.out.print("Ingrese el ID del coche al que desea añadir un propietario: ");
+    int carId;
+    try {
+        carId = Integer.parseInt(scanner.nextLine());
+    } catch (NumberFormatException e) {
+        System.out.println("ID no válido.");
+        return;
+    }
+
+    System.out.print("Nombre del nuevo propietario (usuario): ");
+    String newUserName = scanner.nextLine();
+
+    boolean success = carController.addOwnerToCar(carId, newUserName);
+    if (success) {
+        System.out.println("Propietario añadido correctamente.");
+    } else {
+        System.out.println("Erro al añadir propietario. /n Verifica si el usuario existe o si ya es propietario.");
+    }
+}
+
 
     public static User getCurrentUser() {
         return currentUser;

@@ -25,6 +25,7 @@ public class UserController {
             return true;
 
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -37,26 +38,27 @@ public class UserController {
         return null;
     }
 
-    private User getUserByName(String name) {
-    String sql = "SELECT * FROM users WHERE name = ?";
+    // AHORA ES PÚBLICO para poder accederlo desde fuera del controlador
+    public User getUserByName(String name) {
+        String sql = "SELECT * FROM users WHERE name = ?";
 
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setString(1, name);
-        ResultSet rs = stmt.executeQuery();
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
 
-        if (rs.next()) {
-            System.out.println("DEBUG: Usuario ya existe en BD -> " + rs.getString("name"));
-            return new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
-        } else {
-            System.out.println("DEBUG: Usuario no encontrado");
+            if (rs.next()) {
+                System.out.println("DEBUG: Usuario encontrado -> " + rs.getString("name"));
+                return new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+            } else {
+                System.out.println("DEBUG: Usuario no encontrado");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return null;
     }
-
-    return null;
-}
 }
