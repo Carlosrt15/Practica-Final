@@ -38,7 +38,7 @@ public class UserController {
         return null;
     }
 
-    // AHORA ES PÚBLICO para poder accederlo desde fuera del controlador
+    // ahora public si no no funciona fuera controlador
     public User getUserByName(String name) {
         String sql = "SELECT * FROM users WHERE name = ?";
 

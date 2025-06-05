@@ -3,7 +3,7 @@ package controller;
 import model.Car;
 import model.DBConnection;
 import model.User;
-import controller.UserController;  // Importamos para poder usarlo
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -82,7 +82,7 @@ public class CarController {
 
     // Añadir un propietario a un coche dado el nombre del usuario
     public boolean addOwnerToCar(int carId, String userName) {
-        // Primero buscamos el usuario por nombre para obtener su ID
+     
         User user = userController.getUserByName(userName);
 
         if (user == null) {
@@ -107,4 +107,86 @@ public class CarController {
 
         return false;
     }
+
+
+
+    // Modificar un coche (solo si el usuario es propietario)
+public boolean updateCar(Car car, String userId) {
+    // Verificar si el usuario es propietario
+    String checkOwnershipSql = "SELECT * FROM user_car WHERE car_id = ? AND user_id = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement checkStmt = conn.prepareStatement(checkOwnershipSql)) {
+
+        checkStmt.setInt(1, car.getId());
+        checkStmt.setString(2, userId);
+        ResultSet rs = checkStmt.executeQuery();
+
+        if (!rs.next()) {
+            return false; // No es propietario
+        }
+
+        String updateSql = "UPDATE cars SET brand = ?, model = ?, licensePlate = ?, year = ? WHERE id = ?";
+        try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+            updateStmt.setString(1, car.getBrand());
+            updateStmt.setString(2, car.getModel());
+            updateStmt.setString(3, car.getLicensePlate());
+            updateStmt.setInt(4, car.getYear());
+            updateStmt.setInt(5, car.getId());
+            updateStmt.executeUpdate();
+            return true;
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return false;
+}
+
+// Eliminar un coche (solo si el usuario es el único propietario)
+public boolean deleteCar(int carId, String userId) {
+    String ownershipSql = "SELECT COUNT(*) AS total FROM user_car WHERE car_id = ?";
+    String checkUserSql = "SELECT * FROM user_car WHERE car_id = ? AND user_id = ?";
+    String deleteCarSql = "DELETE FROM cars WHERE id = ?";
+    String deleteRelationsSql = "DELETE FROM user_car WHERE car_id = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement checkUserStmt = conn.prepareStatement(checkUserSql);
+         PreparedStatement countOwnersStmt = conn.prepareStatement(ownershipSql)) {
+
+        checkUserStmt.setInt(1, carId);
+        checkUserStmt.setString(2, userId);
+        ResultSet checkRs = checkUserStmt.executeQuery();
+
+        if (!checkRs.next()) {
+            return false; // No es propietario
+        }
+
+        countOwnersStmt.setInt(1, carId);
+        ResultSet countRs = countOwnersStmt.executeQuery();
+        if (countRs.next() && countRs.getInt("total") > 1) {
+            return false; // Hay más de un propietario, no puede eliminar
+        }
+
+        // Eliminar relaciones y coche (solo si 1 propietario 2 no )
+        try (PreparedStatement deleteRelationsStmt = conn.prepareStatement(deleteRelationsSql);
+             PreparedStatement deleteCarStmt = conn.prepareStatement(deleteCarSql)) {
+
+            deleteRelationsStmt.setInt(1, carId);
+            deleteRelationsStmt.executeUpdate();
+
+            deleteCarStmt.setInt(1, carId);
+            deleteCarStmt.executeUpdate();
+
+            return true;
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return false;
+}
+
 }
